@@ -1,0 +1,26 @@
+.appContainer {
+  width: 600px;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.header {
+  margin-bottom: 48px;
+  display: flex;
+  gap: 20px;
+}
+
+.addInput {
+  padding: 8px 20px;
+  border: 1px solid gray;
+  border-radius: 4px;
+  font-size: 1.5em;
+  background: #eeedf0;
+}
+
+.addButton {
+  background: #acb637;
+}
