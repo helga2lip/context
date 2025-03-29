@@ -2,6 +2,7 @@ import { ToDoList } from './ToDoList/ToDoList'
 import styles from './App.module.css'
 import { useEffect, useState } from 'react';
 import { Button } from './Button/Button';
+import { AppContext } from './context'
 
 export function App() {
   const [todos, setTodos] = useState([]);
@@ -10,7 +11,6 @@ export function App() {
   const [filterText, setFilterText] = useState('');
   const [filterKey, setFilterKey] = useState('');
   const [isCreating, setIsCreating] = useState(false);
-  const [refreshToDos, setRefreshToDos] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isSorted, setIsSorted] = useState(false);
@@ -27,7 +27,7 @@ export function App() {
 
   useEffect(() => {
     fetchTodos();
-  }, [refreshToDos]);
+  }, []);
 
   const addToDo = () => {
     setIsCreating(true);
@@ -39,27 +39,41 @@ export function App() {
         title: addText,
       }),
     })
-      .then(() => {
-        setRefreshToDos(!refreshToDos)
+      .then((response) => {
+        return response.json();
+      })
+      .then((todo) => {
+        setTodos([...todos, todo]);
         setAddText('')
       })
       .finally(() => setIsCreating(false));
   }
 
-  const editToDo = (id) => {
-    const newTodoTitle = prompt('Отредактируйте задачу', '')
+  const editToDo = (todo) => {
+    const newTodoTitle = prompt('Отредактируйте задачу', todo.title)
 
-    fetch(`http://localhost:3005/todos/${id}`, {
+    if (!newTodoTitle) {
+      return
+    }
+
+    fetch(`http://localhost:3005/todos/${todo.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json;charset=utf-8' },
       body: JSON.stringify({
-        id: id,
+        id: todo.id,
         title: newTodoTitle,
       }),
     })
-      .then(() => {
-        setRefreshToDos(!refreshToDos);
+      .then((response) => {
+        return response.json();
       })
+      .then((editedTodo) => {
+        const editedTodoIndex = todos.findIndex((item) => item.id === editedTodo.id)
+        const newTodos = [...todos]
+        newTodos.splice(editedTodoIndex, 1, editedTodo)
+        setTodos(newTodos)
+      }
+      )
       .finally(() => setIsUpdating(false));
   }
 
@@ -70,8 +84,12 @@ export function App() {
       method: 'DELETE',
     })
       .then(() => {
-        setRefreshToDos(!refreshToDos);
-      })
+        const deletedTodoIndex = todos.findIndex((item) => item.id === id)
+        const newTodos = [...todos]
+        newTodos.splice(deletedTodoIndex, 1)
+        setTodos(newTodos)
+      }
+      )
       .finally(() => setIsDeleting(false));
   }
 
