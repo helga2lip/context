@@ -119,18 +119,17 @@ export function App() {
         </header>
         {isLoading
           ? <div className='loader'>Loading...</div>
-          : <ToDoList todos={filteredTodos}
-            onDeleteToDo={deleteToDo}
-            onEditToDo={editToDo}
-            isDeleting={isDeleting}
-            isUpdating={isUpdating}
-            onSortToDo={sortToDo}
-            onFilterToDo={filterTodo}
-            isSorted={isSorted}
-            filterText={filterText}
-            setFilterText={setFilterText} />
+          : <AppContext value={{ deleteToDo, editToDo, isDeleting, isUpdating }}>
+            <ToDoList todos={filteredTodos}
+              onSortToDo={sortToDo}
+              onFilterToDo={filterTodo}
+              isSorted={isSorted}
+              filterText={filterText}
+              setFilterText={setFilterText} />
+          </AppContext >
         }
       </div>
     </div>
+
   )
 }
